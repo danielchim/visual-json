@@ -15,16 +15,15 @@ export const metadata: Metadata = {
     default: `visual-json | ${PAGE_TITLES[""]!.replace(/\n/g, " ")}`,
     template: "%s | visual-json",
   },
-  description:
-    "A visual JSON editor for humans. Tree view, form view, diff view, and more.",
+  description: "The visual JSON editor. Schema-aware, embeddable, extensible.",
   openGraph: {
     type: "website",
     locale: "en_US",
     url: "https://visual-json.dev",
     siteName: "visual-json",
-    title: "visual-json | The Visual JSON Editor for Humans",
+    title: "visual-json | The Visual JSON Editor",
     description:
-      "A visual JSON editor for humans. Tree view, form view, diff view, and more.",
+      "The visual JSON editor. Schema-aware, embeddable, extensible.",
     images: [
       {
         url: "/og",
