@@ -1,0 +1,125 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  overflow: hidden;
+  font-family: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas,
+    monospace;
+  font-size: 13px;
+}
+
+.devtools-container {
+  display: flex;
+  height: 100%;
+}
+
+.devtools-sidebar {
+  width: 260px;
+  flex-shrink: 0;
+  overflow-y: auto;
+  border-right: 1px solid var(--vj-border, #333333);
+  background: var(--vj-bg-panel, #252526);
+}
+
+.devtools-sidebar-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px;
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--vj-text-muted, #888888);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--vj-border, #333333);
+}
+
+.devtools-request-list {
+  list-style: none;
+}
+
+.devtools-request-item {
+  padding: 6px 10px;
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--vj-text, #cccccc);
+  border-bottom: 1px solid var(--vj-border-subtle, #2a2a2a);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.devtools-request-item:hover {
+  background: var(--vj-bg-hover, #2a2d2e);
+}
+
+.devtools-request-item.selected {
+  background: var(--vj-bg-selected, #094771);
+  color: var(--vj-text-selected, #ffffff);
+}
+
+.devtools-request-method {
+  font-weight: 600;
+  margin-right: 6px;
+  font-size: 11px;
+}
+
+.devtools-request-status {
+  margin-left: 6px;
+  color: var(--vj-text-dim, #666666);
+  font-size: 11px;
+}
+
+.devtools-main {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.devtools-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--vj-text-muted, #888888);
+  font-size: 13px;
+}
+
+.devtools-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--vj-text-muted, #888888);
+  font-size: 13px;
+}
+
+.devtools-toggle-btn {
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid var(--vj-border, #333333);
+  background: var(--vj-bg-panel, #252526);
+  color: var(--vj-text-muted, #888888);
+  font-size: 13px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.devtools-toggle-btn:hover {
+  background: var(--vj-bg-hover, #2a2d2e);
+  color: var(--vj-text, #cccccc);
+}
+
+.devtools-collapsed-bar {
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--vj-border, #333333);
+  flex-shrink: 0;
+}

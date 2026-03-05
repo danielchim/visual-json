@@ -1,0 +1,103 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  font-size: 14px;
+}
+
+.options-page {
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 40px 24px;
+}
+
+.options-header {
+  margin-bottom: 32px;
+}
+
+.options-header h1 {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.options-header p {
+  font-size: 13px;
+}
+
+.options-section {
+  margin-bottom: 28px;
+}
+
+.options-section h2 {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.options-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.options-radio {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.options-radio:hover {
+  background: var(--opt-hover);
+}
+
+.options-radio.selected {
+  background: var(--opt-selected);
+}
+
+.options-radio input[type="radio"] {
+  margin-top: 2px;
+  accent-color: var(--opt-accent);
+}
+
+.options-radio-label {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.options-radio-title {
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.options-radio-desc {
+  font-size: 12px;
+}
+
+.options-saved {
+  font-size: 12px;
+  padding: 6px 0;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.options-saved.visible {
+  opacity: 1;
+}
