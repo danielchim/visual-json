@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, type CSSProperties } from "react";
+import { useState, useCallback, useRef, useEffect, type CSSProperties } from "react";
 import { createRoot } from "react-dom/client";
 import type { JsonValue } from "@visual-json/core";
 import { JsonEditor } from "@visual-json/react";
@@ -66,10 +66,15 @@ function ContentApp({ initialValue }: { initialValue: JsonValue }) {
     persistViewMode(next);
   }, [viewMode]);
 
-  // sync rawText when jsonValue changes from tree edits
-  if (!skipRawSync.current && viewMode === "raw") {
-    // handled below in effect-like pattern
-  }
+  useEffect(() => {
+    if (skipRawSync.current) {
+      skipRawSync.current = false;
+      return;
+    }
+    if (viewMode === "raw") {
+      setRawText(JSON.stringify(jsonValue, null, 2));
+    }
+  }, [jsonValue, viewMode]);
 
   const containerStyle: CSSProperties = {
     ...theme,
