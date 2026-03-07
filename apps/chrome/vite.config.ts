@@ -16,10 +16,6 @@ export default defineConfig({
         __dirname,
         "../../packages/@visual-json/react/src/index.ts",
       ),
-      "@internal/ui": path.resolve(
-        __dirname,
-        "../../packages/@internal/ui/src/index.ts",
-      ),
     },
   },
   build: {
