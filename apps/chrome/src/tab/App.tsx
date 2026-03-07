@@ -1,22 +1,31 @@
-import { useState, useCallback, useEffect, useRef, type CSSProperties } from "react";
+import {
+  useState,
+  useCallback,
+  useEffect,
+  useRef,
+  type CSSProperties,
+} from "react";
 import type { JsonValue } from "@visual-json/core";
 import { JsonEditor } from "@visual-json/react";
-import { getStoredJson, setStoredJson, setViewMode as persistViewMode } from "../shared/storage";
+import {
+  getStoredJson,
+  setStoredJson,
+  setViewMode as persistViewMode,
+} from "../shared/storage";
 import { useTheme } from "../shared/use-theme";
 import { useEditorSettings } from "../shared/use-editor-settings";
 import { SettingsPanel } from "../shared/SettingsPanel";
 
 export function App() {
   const theme = useTheme();
-  const { settings, viewMode, sidebarOpen, toggleSidebar } = useEditorSettings();
+  const { settings, viewMode, sidebarOpen, toggleSidebar } =
+    useEditorSettings();
   const [jsonValue, setJsonValue] = useState<JsonValue | null>(null);
   const [rawInput, setRawInput] = useState("");
   const [rawText, setRawText] = useState("");
   const [rawError, setRawError] = useState<string | null>(null);
   const [parseError, setParseError] = useState<string | null>(null);
   const [showSettings, setShowSettings] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const skipRawSync = useRef(false);
 
   useEffect(() => {
     getStoredJson().then((stored) => {
@@ -32,20 +41,11 @@ export function App() {
     });
   }, []);
 
-  useEffect(() => {
-    if (skipRawSync.current) {
-      skipRawSync.current = false;
-      return;
-    }
-    if (jsonValue !== null) {
-      setRawText(JSON.stringify(jsonValue, null, 2));
-    }
-  }, [jsonValue]);
-
   const handleParse = useCallback(() => {
     try {
       const parsed = JSON.parse(rawInput);
       setJsonValue(parsed);
+      setRawText(JSON.stringify(parsed, null, 2));
       setParseError(null);
       setStoredJson(JSON.stringify(parsed, null, 2));
     } catch (err) {
@@ -60,6 +60,7 @@ export function App() {
       try {
         const parsed = JSON.parse(text);
         setJsonValue(parsed);
+        setRawText(JSON.stringify(parsed, null, 2));
         setParseError(null);
         setStoredJson(JSON.stringify(parsed, null, 2));
       } catch (err) {
@@ -84,6 +85,7 @@ export function App() {
 
   const handleChange = useCallback((value: JsonValue) => {
     setJsonValue(value);
+    setRawText(JSON.stringify(value, null, 2));
     setStoredJson(JSON.stringify(value, null, 2));
   }, []);
 
@@ -96,10 +98,6 @@ export function App() {
     setStoredJson("");
   }, []);
 
-  const handleLoadFile = useCallback(() => {
-    fileInputRef.current?.click();
-  }, []);
-
   const handleFileChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
@@ -109,6 +107,7 @@ export function App() {
         try {
           const parsed = JSON.parse(reader.result as string);
           setJsonValue(parsed);
+          setRawText(JSON.stringify(parsed, null, 2));
           setParseError(null);
           setStoredJson(JSON.stringify(parsed, null, 2));
         } catch (err) {
@@ -126,7 +125,6 @@ export function App() {
     try {
       const parsed = JSON.parse(newText);
       setRawError(null);
-      skipRawSync.current = true;
       setJsonValue(parsed);
       setStoredJson(JSON.stringify(parsed, null, 2));
     } catch (e) {
@@ -156,12 +154,23 @@ export function App() {
 
   const fileInput = (
     <input
-      ref={fileInputRef}
       type="file"
       accept=".json,.jsonc"
       onChange={handleFileChange}
       style={{ display: "none" }}
     />
+  );
+
+  const handleLoadFileClick = useCallback(
+    (e: React.MouseEvent<HTMLButtonElement>) => {
+      const parent = e.currentTarget.parentElement;
+      if (!parent) return;
+      const input = parent.querySelector(
+        "input[type=file]",
+      ) as HTMLInputElement;
+      if (input) input.click();
+    },
+    [],
   );
 
   if (jsonValue === null) {
@@ -170,7 +179,7 @@ export function App() {
         <div className="tab-toolbar">
           <span className="title">visual-json</span>
           <button onClick={handlePaste}>Paste from clipboard</button>
-          <button onClick={handleLoadFile}>Load file</button>
+          <button onClick={handleLoadFileClick}>Load file</button>
           {fileInput}
           <button onClick={() => setShowSettings(true)}>Settings</button>
         </div>
@@ -184,7 +193,9 @@ export function App() {
             autoFocus
           />
           {parseError && <span className="tab-error">{parseError}</span>}
-          <button onClick={handleParse} className="tab-load-btn">Load JSON</button>
+          <button onClick={handleParse} className="tab-load-btn">
+            Load JSON
+          </button>
         </div>
       </div>
     );
@@ -197,11 +208,13 @@ export function App() {
         <button onClick={handleCopy}>Copy</button>
         <button onClick={handleCopyMinified}>Copy minified</button>
         <button onClick={handleClear}>Clear</button>
-        <button onClick={handleLoadFile}>Load file</button>
+        <button onClick={handleLoadFileClick}>Load file</button>
         {fileInput}
         <button
           onClick={toggleViewMode}
-          title={viewMode === "tree" ? "Switch to raw view" : "Switch to tree view"}
+          title={
+            viewMode === "tree" ? "Switch to raw view" : "Switch to tree view"
+          }
           style={{ fontWeight: 600 }}
         >
           {viewMode === "tree" ? "Raw" : "Tree"}
@@ -217,15 +230,19 @@ export function App() {
       </div>
       <div className="tab-editor">
         {viewMode === "raw" ? (
-          <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
+          <div
+            style={{ display: "flex", flexDirection: "column", height: "100%" }}
+          >
             {rawError && (
-              <div style={{
-                padding: "6px 12px",
-                fontSize: 12,
-                background: "#ff000018",
-                color: "#cc3333",
-                borderBottom: "1px solid var(--vj-border, #e0e0e0)",
-              }}>
+              <div
+                style={{
+                  padding: "6px 12px",
+                  fontSize: 12,
+                  background: "#ff000018",
+                  color: "#cc3333",
+                  borderBottom: "1px solid var(--vj-border, #e0e0e0)",
+                }}
+              >
                 {rawError}
               </div>
             )}

@@ -36,7 +36,6 @@ export function Panel() {
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [jsonValue, setJsonValue] = useState<JsonValue | null>(null);
   const [loading, setLoading] = useState(false);
-  const requestsRef = useRef<CapturedRequest[]>([]);
 
   useEffect(() => {
     function onRequestFinished(request: chrome.devtools.network.Request) {
@@ -52,8 +51,7 @@ export function Panel() {
         entry: request,
       };
 
-      requestsRef.current = [...requestsRef.current, captured];
-      setRequests(requestsRef.current);
+      setRequests((prev) => [...prev, captured]);
     }
 
     chrome.devtools.network.onRequestFinished.addListener(

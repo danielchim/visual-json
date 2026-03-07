@@ -1,4 +1,10 @@
-import { useState, useCallback, useRef, useEffect, type CSSProperties } from "react";
+import {
+  useState,
+  useCallback,
+  useRef,
+  useEffect,
+  type CSSProperties,
+} from "react";
 import { createRoot } from "react-dom/client";
 import type { JsonValue } from "@visual-json/core";
 import { JsonEditor } from "@visual-json/react";
@@ -30,15 +36,16 @@ function detectJsonPage(): JsonValue | null {
 
 function ContentApp({ initialValue }: { initialValue: JsonValue }) {
   const theme = useTheme();
-  const { settings, viewMode, sidebarOpen, toggleSidebar } = useEditorSettings();
+  const { settings, viewMode, sidebarOpen, toggleSidebar } =
+    useEditorSettings();
   const [jsonValue, setJsonValue] = useState<JsonValue>(initialValue);
   const [rawText, setRawText] = useState(JSON.stringify(initialValue, null, 2));
   const [rawError, setRawError] = useState<string | null>(null);
   const [showSettings, setShowSettings] = useState(false);
-  const skipRawSync = useRef(false);
 
   const handleChange = useCallback((value: JsonValue) => {
     setJsonValue(value);
+    setRawText(JSON.stringify(value, null, 2));
   }, []);
 
   const handleCopy = useCallback(async () => {
@@ -54,7 +61,6 @@ function ContentApp({ initialValue }: { initialValue: JsonValue }) {
     try {
       const parsed = JSON.parse(newText);
       setRawError(null);
-      skipRawSync.current = true;
       setJsonValue(parsed);
     } catch (e) {
       setRawError(e instanceof Error ? e.message : "Invalid JSON");
@@ -65,16 +71,6 @@ function ContentApp({ initialValue }: { initialValue: JsonValue }) {
     const next = viewMode === "tree" ? "raw" : "tree";
     persistViewMode(next);
   }, [viewMode]);
-
-  useEffect(() => {
-    if (skipRawSync.current) {
-      skipRawSync.current = false;
-      return;
-    }
-    if (viewMode === "raw") {
-      setRawText(JSON.stringify(jsonValue, null, 2));
-    }
-  }, [jsonValue, viewMode]);
 
   const containerStyle: CSSProperties = {
     ...theme,
@@ -102,7 +98,9 @@ function ContentApp({ initialValue }: { initialValue: JsonValue }) {
         <button onClick={toggleViewMode} style={{ fontWeight: 600 }}>
           {viewMode === "tree" ? "Raw" : "Tree"}
         </button>
-        <button onClick={() => setShowSettings(true)} title="Settings">⚙</button>
+        <button onClick={() => setShowSettings(true)} title="Settings">
+          ⚙
+        </button>
         <button
           onClick={toggleSidebar}
           title={sidebarOpen ? "Hide sidebar" : "Show sidebar"}
@@ -113,15 +111,19 @@ function ContentApp({ initialValue }: { initialValue: JsonValue }) {
       </div>
       <div style={{ flex: 1, minHeight: 0, overflow: "hidden" }}>
         {viewMode === "raw" ? (
-          <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
+          <div
+            style={{ display: "flex", flexDirection: "column", height: "100%" }}
+          >
             {rawError && (
-              <div style={{
-                padding: "4px 10px",
-                fontSize: 11,
-                background: "#ff000018",
-                color: "#cc3333",
-                borderBottom: "1px solid var(--vj-border, #e0e0e0)",
-              }}>
+              <div
+                style={{
+                  padding: "4px 10px",
+                  fontSize: 11,
+                  background: "#ff000018",
+                  color: "#cc3333",
+                  borderBottom: "1px solid var(--vj-border, #e0e0e0)",
+                }}
+              >
                 {rawError}
               </div>
             )}
