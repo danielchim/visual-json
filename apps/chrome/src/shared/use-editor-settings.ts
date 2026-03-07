@@ -4,17 +4,15 @@ import {
   getViewMode,
   getSidebarOpen,
   setSidebarOpen as persistSidebarOpen,
+  DEFAULT_EDITOR_SETTINGS,
   type EditorSettings,
   type ViewMode,
 } from "./storage";
 
 export function useEditorSettings() {
-  const [settings, setSettings] = useState<EditorSettings>({
-    treeShowValues: true,
-    treeShowCounts: false,
-    editorShowDescriptions: false,
-    editorShowCounts: false,
-  });
+  const [settings, setSettings] = useState<EditorSettings>(
+    DEFAULT_EDITOR_SETTINGS,
+  );
   const [viewMode, setViewMode] = useState<ViewMode>("tree");
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
@@ -23,9 +21,9 @@ export function useEditorSettings() {
     getViewMode().then(setViewMode);
     getSidebarOpen().then(setSidebarOpen);
 
-    const listener = (
-      changes: { [key: string]: chrome.storage.StorageChange },
-    ) => {
+    const listener = (changes: {
+      [key: string]: chrome.storage.StorageChange;
+    }) => {
       if (changes.editorSettings) {
         setSettings(changes.editorSettings.newValue);
       }
