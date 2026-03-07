@@ -6,6 +6,7 @@ import {
   setOpenMode,
   getEditorSettings,
   setEditorSettings,
+  DEFAULT_EDITOR_SETTINGS,
   type ThemePreference,
   type OpenMode,
   type EditorSettings,
@@ -25,12 +26,9 @@ const MODE_OPTIONS: { value: OpenMode; label: string }[] = [
 export function SettingsPanel({ onBack }: { onBack: () => void }) {
   const [themePref, setThemePref] = useState<ThemePreference>("system");
   const [openMode, setOpenModeState] = useState<OpenMode>("popup");
-  const [edSettings, setEdSettings] = useState<EditorSettings>({
-    treeShowValues: true,
-    treeShowCounts: false,
-    editorShowDescriptions: false,
-    editorShowCounts: false,
-  });
+  const [edSettings, setEdSettings] = useState<EditorSettings>(
+    DEFAULT_EDITOR_SETTINGS,
+  );
 
   useEffect(() => {
     getThemePreference().then(setThemePref);
@@ -60,11 +58,20 @@ export function SettingsPanel({ onBack }: { onBack: () => void }) {
   return (
     <div style={{ height: "100%", overflow: "auto" }}>
       <div style={{ padding: "12px 16px" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+            marginBottom: 16,
+          }}
+        >
           <button onClick={onBack} style={backBtnStyle}>
             ← Back
           </button>
-          <span style={{ fontWeight: 600, fontSize: 14, color: "var(--vj-text)" }}>
+          <span
+            style={{ fontWeight: 600, fontSize: 14, color: "var(--vj-text)" }}
+          >
             Settings
           </span>
         </div>
@@ -126,17 +133,25 @@ const backBtnStyle: React.CSSProperties = {
   cursor: "pointer",
 };
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function Section({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
   return (
     <div style={{ marginBottom: 16 }}>
-      <div style={{
-        fontSize: 11,
-        fontWeight: 600,
-        textTransform: "uppercase",
-        letterSpacing: "0.05em",
-        color: "var(--vj-text-muted)",
-        marginBottom: 6,
-      }}>
+      <div
+        style={{
+          fontSize: 11,
+          fontWeight: 600,
+          textTransform: "uppercase",
+          letterSpacing: "0.05em",
+          color: "var(--vj-text-muted)",
+          marginBottom: 6,
+        }}
+      >
         {title}
       </div>
       <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
@@ -156,11 +171,13 @@ function RadioGroup<T extends string>({
   onChange: (value: T) => void;
 }) {
   return (
-    <div style={{
-      display: "flex",
-      flexDirection: "column",
-      gap: 4,
-    }}>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        gap: 4,
+      }}
+    >
       {options.map((opt) => (
         <label
           key={opt.value}
@@ -171,7 +188,8 @@ function RadioGroup<T extends string>({
             padding: "6px 8px",
             borderRadius: 4,
             cursor: "pointer",
-            background: value === opt.value ? "var(--vj-bg-hover)" : "transparent",
+            background:
+              value === opt.value ? "var(--vj-bg-hover)" : "transparent",
           }}
         >
           <input
@@ -186,10 +204,12 @@ function RadioGroup<T extends string>({
               accentColor: "var(--vj-accent, #0066cc)",
             }}
           />
-          <span style={{
-            fontSize: 13,
-            color: "var(--vj-text)",
-          }}>
+          <span
+            style={{
+              fontSize: 13,
+              color: "var(--vj-text)",
+            }}
+          >
             {opt.label}
           </span>
         </label>
@@ -208,38 +228,47 @@ function ToggleRow({
   onChange: () => void;
 }) {
   return (
-    <label style={{
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "space-between",
-      padding: "5px 8px",
-      borderRadius: 4,
-      cursor: "pointer",
-    }}>
+    <label
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        padding: "5px 8px",
+        borderRadius: 4,
+        cursor: "pointer",
+      }}
+    >
       <span style={{ fontSize: 13 }}>{label}</span>
       <div
-        onClick={(e) => { e.preventDefault(); onChange(); }}
+        onClick={(e) => {
+          e.preventDefault();
+          onChange();
+        }}
         style={{
           width: 36,
           height: 20,
           borderRadius: 10,
-          background: checked ? "var(--vj-accent, #0066cc)" : "var(--vj-border, #cccccc)",
+          background: checked
+            ? "var(--vj-accent, #0066cc)"
+            : "var(--vj-border, #cccccc)",
           position: "relative",
           transition: "background 0.15s",
           cursor: "pointer",
           flexShrink: 0,
         }}
       >
-        <div style={{
-          width: 16,
-          height: 16,
-          borderRadius: 8,
-          background: "#ffffff",
-          position: "absolute",
-          top: 2,
-          left: checked ? 18 : 2,
-          transition: "left 0.15s",
-        }} />
+        <div
+          style={{
+            width: 16,
+            height: 16,
+            borderRadius: 8,
+            background: "#ffffff",
+            position: "absolute",
+            top: 2,
+            left: checked ? 18 : 2,
+            transition: "left 0.15s",
+          }}
+        />
       </div>
     </label>
   );

@@ -1,4 +1,4 @@
-import { useState, useEffect, type CSSProperties } from "react";
+import { useState, useEffect, useRef, type CSSProperties } from "react";
 import { LIGHT_THEME, DARK_THEME } from "./theme";
 import { getThemePreference, type ThemePreference } from "./storage";
 
@@ -15,21 +15,25 @@ function resolveTheme(pref: ThemePreference): CSSProperties {
 }
 
 export function useTheme(): CSSProperties {
-  const [pref, setPref] = useState<ThemePreference>("system");
-  const [theme, setTheme] = useState<CSSProperties>(() => resolveTheme("system"));
+  const prefRef = useRef<ThemePreference>("system");
+  const [theme, setTheme] = useState<CSSProperties>(() =>
+    resolveTheme("system"),
+  );
 
   useEffect(() => {
     getThemePreference().then((stored) => {
-      setPref(stored);
+      prefRef.current = stored;
       setTheme(resolveTheme(stored));
     });
   }, []);
 
   useEffect(() => {
-    const handler = (changes: { [key: string]: chrome.storage.StorageChange }) => {
+    const handler = (changes: {
+      [key: string]: chrome.storage.StorageChange;
+    }) => {
       if (changes.theme) {
         const next = changes.theme.newValue as ThemePreference;
-        setPref(next);
+        prefRef.current = next;
         setTheme(resolveTheme(next));
       }
     };
@@ -38,12 +42,12 @@ export function useTheme(): CSSProperties {
   }, []);
 
   useEffect(() => {
-    if (pref !== "system") return;
+    if (prefRef.current !== "system") return;
     const mq = window.matchMedia("(prefers-color-scheme: dark)");
     const handler = () => setTheme(resolveTheme("system"));
     mq.addEventListener("change", handler);
     return () => mq.removeEventListener("change", handler);
-  }, [pref]);
+  });
 
   return theme;
 }

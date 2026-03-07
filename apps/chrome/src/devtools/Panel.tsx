@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef, type CSSProperties } from "react";
+import { useState, useEffect, useCallback, type CSSProperties } from "react";
 import type { JsonValue } from "@visual-json/core";
 import { JsonEditor } from "@visual-json/react";
 import { useTheme } from "../shared/use-theme";
@@ -14,6 +14,15 @@ interface CapturedRequest {
 
 let nextId = 0;
 
+function getUrlLabel(url: string) {
+  try {
+    const u = new URL(url);
+    return u.pathname + u.search;
+  } catch {
+    return url;
+  }
+}
+
 export function Panel() {
   const theme = useTheme();
   const { settings, sidebarOpen, toggleSidebar } = useEditorSettings();
@@ -21,7 +30,6 @@ export function Panel() {
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [jsonValue, setJsonValue] = useState<JsonValue | null>(null);
   const [loading, setLoading] = useState(false);
-  const requestsRef = useRef<CapturedRequest[]>([]);
 
   useEffect(() => {
     function onRequestFinished(request: chrome.devtools.network.Request) {
@@ -37,8 +45,7 @@ export function Panel() {
         entry: request,
       };
 
-      requestsRef.current = [...requestsRef.current, captured];
-      setRequests(requestsRef.current);
+      setRequests((prev) => [...prev, captured]);
     }
 
     chrome.devtools.network.onRequestFinished.addListener(
@@ -67,15 +74,6 @@ export function Panel() {
       setLoading(false);
     });
   }, []);
-
-  const getUrlLabel = (url: string) => {
-    try {
-      const u = new URL(url);
-      return u.pathname + u.search;
-    } catch {
-      return url;
-    }
-  };
 
   const containerStyle: CSSProperties = {
     ...theme,

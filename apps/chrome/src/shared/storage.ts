@@ -9,7 +9,7 @@ export interface EditorSettings {
   editorShowCounts: boolean;
 }
 
-const DEFAULT_EDITOR_SETTINGS: EditorSettings = {
+export const DEFAULT_EDITOR_SETTINGS: EditorSettings = {
   treeShowValues: true,
   treeShowCounts: false,
   editorShowDescriptions: false,
@@ -30,7 +30,9 @@ export async function getThemePreference(): Promise<ThemePreference> {
   return result.theme ?? "system";
 }
 
-export async function setThemePreference(theme: ThemePreference): Promise<void> {
+export async function setThemePreference(
+  theme: ThemePreference,
+): Promise<void> {
   await chrome.storage.local.set({ theme });
 }
 
@@ -57,7 +59,9 @@ export async function getEditorSettings(): Promise<EditorSettings> {
   return { ...DEFAULT_EDITOR_SETTINGS, ...result.editorSettings };
 }
 
-export async function setEditorSettings(settings: EditorSettings): Promise<void> {
+export async function setEditorSettings(
+  settings: EditorSettings,
+): Promise<void> {
   await chrome.storage.local.set({ editorSettings: settings });
 }
 
