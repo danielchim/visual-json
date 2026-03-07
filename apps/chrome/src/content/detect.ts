@@ -1,4 +1,5 @@
 import type { JsonValue } from "@visual-json/core";
+import { logger } from "../shared/logger";
 
 function extractJSON(rawJson: string): string {
   return rawJson
@@ -24,18 +25,14 @@ function getPreWithSource(): HTMLPreElement | null {
     return null;
   }
 
-  console.debug(
+  logger.debug(
     `[visual-json] getPreWithSource: Found ${childNodes.length} child nodes in body`,
   );
 
   if (childNodes.length > 1 && allTextNodes(childNodes)) {
-    if (process.env.NODE_ENV === "development") {
-      console.debug(
-        "[visual-json] Loaded from multiple text nodes, normalizing",
-      );
-    }
+    logger.debug("[visual-json] Loaded from multiple text nodes, normalizing");
     document.body.normalize(); // concatenates adjacent text nodes
-    console.debug(
+    logger.debug(
       `[visual-json] getPreWithSource: Normalized to ${document.body.childNodes.length} nodes`,
     );
   }
@@ -44,7 +41,7 @@ function getPreWithSource(): HTMLPreElement | null {
   const nodeName = childNode.nodeName;
   const textContent = childNode.textContent || "";
 
-  console.debug(`[visual-json] getPreWithSource: First node is ${nodeName}`);
+  logger.debug(`[visual-json] getPreWithSource: First node is ${nodeName}`);
 
   if (nodeName === "PRE") {
     return childNode as HTMLPreElement;
@@ -52,11 +49,9 @@ function getPreWithSource(): HTMLPreElement | null {
 
   // if Content-Type is text/html
   if (nodeName === "#text" && textContent.trim().length > 0) {
-    if (process.env.NODE_ENV === "development") {
-      console.debug(
-        `[visual-json] Loaded from a text node (length: ${textContent.length}), this might have returned content-type: text/html`,
-      );
-    }
+    logger.debug(
+      `[visual-json] Loaded from a text node (length: ${textContent.length}), this might have returned content-type: text/html`,
+    );
 
     const pre = document.createElement("pre");
     pre.textContent = textContent;
@@ -65,7 +60,7 @@ function getPreWithSource(): HTMLPreElement | null {
     return pre;
   }
 
-  console.debug(
+  logger.debug(
     "[visual-json] getPreWithSource: First node is neither PRE nor non-empty #text",
   );
   return null;
@@ -91,11 +86,11 @@ function isJSONP(jsonStr: string): boolean {
 }
 
 export function detectJsonPage(): JsonValue | null {
-  console.log("[visual-json] Starting JSON page detection...");
+  logger.debug("[visual-json] Starting JSON page detection...");
 
   // 1. Check Content-Type if available (most reliable indicator)
   const contentType = document.contentType || "";
-  console.log(`[visual-json] Document Content-Type: ${contentType}`);
+  logger.debug(`[visual-json] Document Content-Type: ${contentType}`);
 
   // If it's explicitly HTML, we should be extremely careful.
   // Only proceed if it looks like a browser-wrapped text/html response (e.g. only one element which is a PRE)
@@ -108,12 +103,12 @@ export function detectJsonPage(): JsonValue | null {
     (el) => el.tagName !== "SCRIPT" && el.tagName !== "STYLE",
   );
 
-  console.log(
+  logger.debug(
     `[visual-json] Body has ${children.length} children, ${nonScriptElements.length} are non-script/style.`,
   );
 
   if (nonScriptElements.length > 2) {
-    console.log(
+    logger.debug(
       "[visual-json] Bail out: Page has too many non-script elements. Likely a real HTML page.",
     );
     return null;
@@ -125,31 +120,31 @@ export function detectJsonPage(): JsonValue | null {
     nonScriptElements.length > 0 &&
     !nonScriptElements.some((el) => el.tagName === "PRE")
   ) {
-    console.log("[visual-json] Bail out: Page has elements but no PRE tag.");
+    logger.debug("[visual-json] Bail out: Page has elements but no PRE tag.");
     return null;
   }
 
   const pre = getPreWithSource();
 
   if (!pre) {
-    console.log("[visual-json] No suitable PRE or text node found.");
+    logger.debug("[visual-json] No suitable PRE or text node found.");
     return null;
   }
 
   const textContent = (pre.textContent || "").trim();
-  console.log(
+  logger.debug(
     "[visual-json] Found potential JSON content, length:",
     textContent.length,
   );
 
   // 3. Quick structural checks on the text
   if (textContent.length < 2) {
-    console.log("[visual-json] Bail out: Content too short.");
+    logger.debug("[visual-json] Bail out: Content too short.");
     return null;
   }
 
   if (textContent.startsWith("<")) {
-    console.log(
+    logger.debug(
       "[visual-json] Bail out: Content starts with '<', likely HTML.",
     );
     return null;
@@ -157,23 +152,23 @@ export function detectJsonPage(): JsonValue | null {
 
   // 4. Regex and Parsing
   if (isJSON(textContent) || isJSONP(textContent)) {
-    console.log("[visual-json] Content passed Regex JSON/JSONP check.");
+    logger.debug("[visual-json] Content passed Regex JSON/JSONP check.");
     try {
       // First try parsing directly
       const parsed = JSON.parse(textContent) as JsonValue;
 
       // If we're in an HTML document, the parsed value MUST be an object or array to avoid false positives with simple numbers/strings
       if (isHtml && (typeof parsed !== "object" || parsed === null)) {
-        console.log(
+        logger.debug(
           "[visual-json] Bail out: Parsed JSON in HTML but it's not an object/array (plain primitive).",
         );
         return null;
       }
 
-      console.log("[visual-json] Successfully parsed as direct JSON.");
+      logger.debug("[visual-json] Successfully parsed as direct JSON.");
       return parsed;
     } catch (e: any) {
-      console.log("[visual-json] Direct JSON parse failed:", e.message);
+      logger.debug("[visual-json] Direct JSON parse failed:", e.message);
       try {
         // If it fails, try extracting (e.g., JSONP or while(1); wrappers)
         const extracted = extractJSON(textContent);
@@ -181,17 +176,17 @@ export function detectJsonPage(): JsonValue | null {
           throw new Error("No extraction possible");
 
         const parsed = JSON.parse(extracted) as JsonValue;
-        console.log(
+        logger.debug(
           "[visual-json] Successfully parsed as extracted JSON/JSONP.",
         );
         return parsed;
       } catch (e: any) {
-        console.log("[visual-json] Extracted JSON parse failed:", e.message);
+        logger.debug("[visual-json] Extracted JSON parse failed:", e.message);
         return null;
       }
     }
   } else {
-    console.log("[visual-json] Content failed Regex JSON/JSONP check.");
+    logger.debug("[visual-json] Content failed Regex JSON/JSONP check.");
   }
 
   return null;
