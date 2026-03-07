@@ -6,27 +6,8 @@ import { useTheme } from "../shared/use-theme";
 import { useEditorSettings } from "../shared/use-editor-settings";
 import { setViewMode as persistViewMode } from "../shared/storage";
 import { SettingsPanel } from "../shared/SettingsPanel";
+import { detectJsonPage } from "./detect";
 import "./styles.css";
-
-function detectJsonPage(): JsonValue | null {
-  const pre = document.querySelector("body > pre");
-  if (!pre) return null;
-
-  const children = document.body.children;
-  const isJsonPage =
-    (children.length === 1 && children[0].tagName === "PRE") ||
-    (children.length === 2 &&
-      children[0].tagName === "PRE" &&
-      children[1].classList.contains("json-formatter-container"));
-
-  if (!isJsonPage) return null;
-
-  try {
-    return JSON.parse(pre.textContent ?? "") as JsonValue;
-  } catch {
-    return null;
-  }
-}
 
 function ContentApp({ initialValue }: { initialValue: JsonValue }) {
   const theme = useTheme();
