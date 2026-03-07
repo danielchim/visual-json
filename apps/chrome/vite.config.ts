@@ -2,17 +2,20 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { crx } from "@crxjs/vite-plugin";
 import manifest from "./manifest.json";
-import path from "path";
+import { fileURLToPath } from "url";
+import { dirname, resolve } from "path";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
   plugins: [react(), crx({ manifest })],
   resolve: {
     alias: {
-      "@visual-json/core": path.resolve(
+      "@visual-json/core": resolve(
         __dirname,
         "../../packages/@visual-json/core/src/index.ts",
       ),
-      "@visual-json/react": path.resolve(
+      "@visual-json/react": resolve(
         __dirname,
         "../../packages/@visual-json/react/src/index.ts",
       ),
