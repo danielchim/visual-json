@@ -54,12 +54,4 @@ export const DARK_THEME: CSSProperties = {
   "--vj-input-font-size": "13px",
 } as CSSProperties;
 
-export function getSystemTheme(): CSSProperties {
-  if (
-    typeof window !== "undefined" &&
-    window.matchMedia("(prefers-color-scheme: dark)").matches
-  ) {
-    return DARK_THEME;
-  }
-  return LIGHT_THEME;
-}
+
