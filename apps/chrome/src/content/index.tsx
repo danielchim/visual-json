@@ -1,10 +1,4 @@
-import {
-  useState,
-  useCallback,
-  useRef,
-  useEffect,
-  type CSSProperties,
-} from "react";
+import { useState, useCallback, type CSSProperties } from "react";
 import { createRoot } from "react-dom/client";
 import type { JsonValue } from "@visual-json/core";
 import { JsonEditor } from "@visual-json/react";

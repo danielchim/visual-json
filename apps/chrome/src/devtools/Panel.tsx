@@ -1,10 +1,4 @@
-import {
-  useState,
-  useEffect,
-  useCallback,
-  useRef,
-  type CSSProperties,
-} from "react";
+import { useState, useEffect, useCallback, type CSSProperties } from "react";
 import type { JsonValue } from "@visual-json/core";
 import { JsonEditor } from "@visual-json/react";
 import { useTheme } from "../shared/use-theme";
